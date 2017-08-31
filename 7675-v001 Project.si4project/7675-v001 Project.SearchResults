@@ -1,0 +1,4 @@
+---- IO_E2 Matches (3 in 3 files) ----
+customer.h (project\turnkey_gpcv1248_cvr\inc) line 448 : #define SCCB_SDA				IO_E2	// Sensor I2C data pin	
+driver_l1.h (driver_l1\inc) line 295 :     IO_E2 ,
+drv_l1_gpio.h (driver_l1\common\inc) line 148 :     IO_E2 ,
