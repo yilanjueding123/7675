@@ -1487,6 +1487,8 @@ void ap_peripheral_key_register(INT8U type)
 		key_map[0].key_active = 1;
 		key_map[0].key_long = 0;
 
+
+
 		key_map[1].key_io	= FUN_KEYB;
 		key_map[1].key_function = (KEYFUNC)ap_peripheral_functionb_key_exe;
 		key_map[1].key_active = FUN_KEYB_ACTIVE;
@@ -1503,10 +1505,10 @@ void ap_peripheral_key_register(INT8U type)
 		key_map[3].key_long = 0;
 
 
-		key_map[4].key_io	= TOUCH_KEY;
-		key_map[4].key_function = (KEYFUNC)ap_peripheral_function_touch_key_exe;
-		key_map[4].key_active = FUN_KEYD_ACTIVE;
-		key_map[4].key_long = 0;
+		key_map[3].key_io	= TOUCH_KEY;
+		key_map[3].key_function = (KEYFUNC)ap_peripheral_function_touch_key_exe;
+		key_map[3].key_active = FUN_KEYD_ACTIVE;
+		key_map[3].key_long = 0;
 
 	}
 	else if (type == USBD_DETECT)
@@ -1963,7 +1965,7 @@ void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 		{
 			if ((video_record_sts & 0x04) == 0)
 			{
-				__msg("ap_peripheral_functionb_key_exe\n");
+
 				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
 			}
 
@@ -1979,7 +1981,7 @@ void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr)
 {
 	INT16U led_type 	= 0, i;
-	return;
+
 	if (!s_usbd_pin)
 	{
 		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
@@ -1999,7 +2001,7 @@ void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr)
 					OSTimeDly(15);
 				}
 			}
-			__msg("ap_peripheral_functionc_key_exe\n");
+
 			if ((video_record_sts & 0x06) == 0)
 			{
 

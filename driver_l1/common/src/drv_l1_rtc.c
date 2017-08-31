@@ -692,26 +692,26 @@ void ext_rtc_init(void)
 	INT8U byReliable=0;
 	R_EXT_RTC_CTRL = 0x01;					// enable ext rtc clock 
 
-	if (INIT_MHZ==144)
+	//if (INIT_MHZ==144)
 		(*((volatile INT32U *) 0xC009002C)) = 0x20 ;
 	ext_rtc_write(R_EXTRTC_CTRL, 0x15);     // Up Count; RTC clk enable
 
      if (ext_rtc_get_reliable(&byReliable)<0) {
-	 	DBG_PRINT("Failed to get Ext RTC reliable\r\n");
+	 	//DBG_PRINT("Failed to get Ext RTC reliable\r\n");
 		ext_rtc_set_reliable(REALIBABLE);	
      }
 	 	
      if (byReliable!=REALIBABLE) {
-	 	DBG_PRINT("Ext RTC reliable is wrong=0x%02X, set again\r\n", byReliable);
+	 	//DBG_PRINT("Ext RTC reliable is wrong=0x%02X, set again\r\n", byReliable);
 		ext_rtc_set_reliable(REALIBABLE);
 
 		ext_rtc_get_reliable(&byReliable) ;
-		DBG_PRINT("Get_reliable_value=%d\r\n",byReliable);
+		//DBG_PRINT("Get_reliable_value=%d\r\n",byReliable);
 		if (byReliable!=REALIBABLE) {
-			DBG_PRINT("Failed to set/get Ext RTC reliable!!\r\n");
+			//DBG_PRINT("Failed to set/get Ext RTC reliable!!\r\n");
 		}
      }else {
-		DBG_PRINT("Ext RTC reliable is OK\r\n");
+		//DBG_PRINT("Ext RTC reliable is OK\r\n");
      }
 }
 

@@ -445,7 +445,7 @@
 
 
 #define SCCB_SCL				IO_E1 // Sensor I2C clock pin
-#define SCCB_SDA				IO_E2	// Sensor I2C data pin	
+#define SCCB_SDA				IO_E0	// Sensor I2C data pin	
 #define SCCB_RESET				IO_C14
 #define RESET_PIN_IO
 

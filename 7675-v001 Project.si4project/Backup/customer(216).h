@@ -397,7 +397,7 @@
 #define sensor_format			SOI_H42_MIPI
 #define SENSOR_INTERFACE		SENSOR_RAW10
 
-#define SENSOR_FLIP 			0	   
+#define SENSOR_FLIP 			1	   
 #define USE_G_SENSOR_NAME		G_SENSOR_DA380	
 #define USE_G_SENSOR_ACTIVE 	0
 #define CPU_DRAW_TIME_STAMP_BLACK_EDGE 0
@@ -448,6 +448,7 @@
 #define SCCB_SDA				IO_E2	// Sensor I2C data pin	
 #define SCCB_RESET				IO_C14
 #define RESET_PIN_IO
+#define ISP_IO					IO_D11
 
 #define I2C_SCL 				IO_F15	// G_Sensor I2C clock pin
 #define I2C_SDA 				IO_F15	// G_Sensor I2C data pin

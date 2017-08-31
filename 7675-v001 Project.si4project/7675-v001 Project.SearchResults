@@ -1,4 +1,6 @@
----- IO_E2 Matches (3 in 3 files) ----
-customer.h (project\turnkey_gpcv1248_cvr\inc) line 448 : #define SCCB_SDA				IO_E2	// Sensor I2C data pin	
-driver_l1.h (driver_l1\inc) line 295 :     IO_E2 ,
-drv_l1_gpio.h (driver_l1\common\inc) line 148 :     IO_E2 ,
+---- ver_check Matches (7 in 1 files) ----
+sensor_soi_h42.c (driver_l2\sensor\src) line 156 : INT8U ver_check(INT8U id)
+sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 				if((ver_check(h42_id) == 0)||(ver_check(h42_id) == 0x80))	//SOI suggetion do it.
+sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 				else if (ver_check(h42_id) == 0x81)
+sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 			if((ver_check(h42_id) == 0)||(ver_check(h42_id) == 0x80))	//SOI suggetion do it.
+sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 			else if (ver_check(h42_id) == 0x81)

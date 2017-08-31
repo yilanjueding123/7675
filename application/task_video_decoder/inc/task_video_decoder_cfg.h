@@ -2,7 +2,7 @@
 #define __TASK_VIDEO_DECODER_CFG_H__
 
 
-#define VIDEO_DECODE_TIMER			TIMER_B
+#define VIDEO_DECODE_TIMER			TIMER_C
 #define AUDIO_FRAME_NO				3	//audio frame number  (二塊來不及)
 
 

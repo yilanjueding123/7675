@@ -46,7 +46,8 @@ void adc_init(void)
 	R_ADC_TP_CTRL    = 0;
 
 		
-	R_ADC_USELINEIN = 0x2;//(GPL32700B)//for  2 of AD pad
+	//R_ADC_USELINEIN = 0x2;//(GPL32700B)//for  2 of AD pad
+	R_ADC_USELINEIN = 0x1;//(GPL32700B)//for  line 0  of AD pad
 							//bit0  enable line0
 							//bit1  enable line1
 							//bit2	enable line2

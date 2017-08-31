@@ -334,12 +334,12 @@ void sensor_SOi_h42_init(INT32U WIDTH, INT32U HEIGHT)
 {
 	INT32U i;
 	
-	__msg("sensor_SOi_h42_init\n");
 #ifdef RESET_PIN_IO
+	__msg("sensor_SOi_h42_init, reset\n");
 	gpio_init_io(SCCB_RESET, GPIO_OUTPUT);
 	gpio_set_port_attribute(SCCB_RESET, ATTRIBUTE_HIGH);
 	gpio_write_io(SCCB_RESET, DATA_LOW);
-
+	
 	drv_msec_wait(200);
 	gpio_write_io(SCCB_RESET, DATA_HIGH);
 	drv_msec_wait(20);
