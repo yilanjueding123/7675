@@ -1,12 +1,28 @@
----- MSG_APQ_VIDEO_RECORD_ACTIVE Matches (11 in 6 files) ----
-ap_peripheral_battery_check_calculate in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 						msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-ap_peripheral_battery_check_calculate in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-ap_peripheral_functionb_key_exe in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-ap_video_record_func_key_active in ap_video_record.c (application\task_state_handling\state_video_record\src) : 		if ((event == MSG_APQ_VIDEO_RECORD_ACTIVE) || (event == MSG_APQ_CAPTUER_ACTIVE))
-state_audio_record_entry in state_audio_record.c (application\task_state_handling\state_audio_record\src) : 			case MSG_APQ_VIDEO_RECORD_ACTIVE:
-state_audio_record_entry in state_audio_record.c (application\task_state_handling\state_audio_record\src) : 				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-state_video_preview_entry in state_video_preview.c (application\task_state_handling\state_video_preview\src) : 			case MSG_APQ_VIDEO_RECORD_ACTIVE:
-state_video_record_entry in state_video_record.c (application\task_state_handling\state_video_record\src) : 		//	msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-state_video_record_entry in state_video_record.c (application\task_state_handling\state_video_record\src) : 			msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-state_video_record_entry in state_video_record.c (application\task_state_handling\state_video_record\src) : 			case MSG_APQ_VIDEO_RECORD_ACTIVE:
-turnkey_drv_msg.h (application\inc) line 466 : 	MSG_APQ_VIDEO_RECORD_ACTIVE,
+---- led_green_on Matches (27 in 5 files) ----
+charge_flash_pro in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 		led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on(); 
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on(); 
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on(); 					//l1
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on(); 					//l1
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on(); 					//l1
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on(); 					//l1
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on();
+set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on();
+ap_peripheral_handling.c (application\task_peripheral_handling\src) line 649 : void led_green_on(void)
+LED_blanking_isr in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on();
+LED_blanking_isr in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
+LED_blanking_isr in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on();
+ap_peripheral_functionb_key_exe in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on(); 					//l1
+ap_peripheral_functiond_key_exe in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on(); 					//l1
+ap_peripheral_handling.h (application\task_peripheral_handling\inc) line 52 : extern void led_green_on(void);
+ap_state_handling.c (application\task_state_handling\src) line 68 : extern void led_green_on(void);
+ap_state_handling_power_off in ap_state_handling.c (application\task_state_handling\src) : 		led_green_on();
+ap_video_record.c (application\task_state_handling\state_video_record\src) line 43 : extern void led_green_on(void);
+task_peripheral_handling.c (application\task_peripheral_handling\src) line 51 : extern void led_green_on(void);
+task_peripheral_handling_entry in task_peripheral_handling.c (application\task_peripheral_handling\src) : 								//led_green_on();

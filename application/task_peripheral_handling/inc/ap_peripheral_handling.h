@@ -56,8 +56,9 @@ extern void led_red_off(void);
 extern void led_mainled_off(void);
 extern void led_mainled_on(void);
 extern void motor_on(void);
-
 extern void motor_off(void);
+
+extern INT8U audio_record_sts;
 
 #if TV_DET_ENABLE
 extern INT8U tv_plug_status_get(void);

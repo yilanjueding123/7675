@@ -468,6 +468,7 @@ void state_video_record_entry(void * para, INT32U state)
 				break;
 
 			case MSG_APQ_AUDO_ACTIVE:
+				__msg("record status, enter audio status\n");
 				if ((ap_video_record_sts_get() &VIDEO_RECORD_BUSY))
 				{
 					send_active 		= 0;
@@ -478,7 +479,9 @@ void state_video_record_entry(void * para, INT32U state)
 					}
 				}
 				else 
-					send_active = 1;
+				{
+					send_active = 1;					
+				}
 
 				video_calculate_left_recording_time_disable();
 				OSTimeDly(3);
@@ -487,7 +490,9 @@ void state_video_record_entry(void * para, INT32U state)
 				OSQPost(StateHandlingQ, (void *) STATE_AUDIO_RECORD);
 
 				if (send_active)
-					msgQSend(ApQ, MSG_APQ_AUDO_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+				{
+					msgQSend(ApQ, MSG_APQ_AUDO_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);					
+				}
 
 				exit_flag = EXIT_BREAK;
 				break;

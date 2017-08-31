@@ -10,7 +10,7 @@ const INT8U  R_CopyrightMSG_Buf[]= "版权声明: 本产品由深圳市乐信兴业科技有限公司
 const INT8U   sensor_type_name[9][13]={"OV7670","OV9712","SOI_H22","BF3703","SOI_H22_MIPI","OV3640","OV5642",
 	                                   "GC1004","GC1004_MIPI"
 };
-INT8U   init_buff[35]="2015.01.01 23:59:59\r\nStampMode:Y";
+INT8U   init_buff[22]="2017-01-01 23:59:59 N";
 
 static void save_COPYRIGHT_MESSAGE_to_disk(void)
 {
@@ -59,7 +59,7 @@ static void save_VERSION_NUMBER_to_disk(void)
 }
 static void save_SENSOR_TYPE_to_disk(void)
 {
-	//INT8U  *p;
+	INT8U  *p;
 	INT16S fd;
 	INT32U addr;
 	fd = open("C:\\sensor.txt", O_RDWR|O_TRUNC|O_CREAT);
@@ -78,7 +78,7 @@ static void save_SENSOR_TYPE_to_disk(void)
 	close(fd);
 	gp_free((void*) addr);
 }
-INT8U display_osd_flag=1;//默认显示OSD
+INT8U display_osd_flag=0;//默认bu显示OSD
 
 static INT32S save_example_time_to_disk(void)
 {
@@ -90,12 +90,12 @@ static INT32S save_example_time_to_disk(void)
 	#if 0
 	fd = open("C:\\TAG.TXT", O_RDWR|O_TRUNC|O_CREAT);
 	#else
-	fd = open("C:\\timerset.txt", O_RDWR|O_TRUNC|O_CREAT);
+	fd = open("C:\\time.txt", O_RDWR|O_TRUNC|O_CREAT);
 	#endif
 	if(fd < 0)
 		return STATUS_FAIL;
 
-	addr = (INT32U)gp_malloc(32+5);
+	addr = (INT32U)gp_malloc(20+5);
 	if(!addr)
 	{
 		close(fd);
@@ -103,18 +103,19 @@ static INT32S save_example_time_to_disk(void)
 	}
 		
 	//gp_strcpy((INT8S*)video_info->AudSubFormat, (INT8S *)"adpcm");
-		if(display_osd_flag)
-		init_buff[31]='Y';
-	else
-		init_buff[31]='N';
+	//gp_strcpy((INT8S*)addr, (INT8S *)"2017-01-01 23:59:59 ");
+			if(display_osd_flag)
+		      init_buff[20]='Y';
+	        else
+		      init_buff[20]='N';
 	gp_strcpy((INT8S*)addr, (INT8S *)init_buff);
-	write(fd, addr, 32);
+	write(fd, addr, 22);
 	close(fd);
 	gp_free((void*) addr);
 	
 	return STATUS_OK;
 }
-
+INT8U  record_led_flag=0;
 INT32S JH_Message_Get(void)
 {
 #if 0
@@ -151,6 +152,7 @@ Fail_Return_2:
     INT8U  read_flag=0;
 	INT8U  data;
 	INT8U  *pdata;
+	INT8U  *yndata;
 	INT16S fd;
 	INT16U wtemp;
 	INT32U addr;
@@ -160,7 +162,7 @@ Fail_Return_2:
 	#if 0
 	fd = open("C:\\TAG.TXT", O_RDONLY);
 	#else
-	fd = open("C:\\timerset.txt", O_RDONLY);
+	fd = open("C:\\time.txt", O_RDONLY);
 	#endif
 
 	if(fd < 0)
@@ -169,14 +171,14 @@ Fail_Return_2:
 		goto Fail_Return_3;
 	}
 
-	addr = (INT32U)gp_malloc(32+5);
+	addr = (INT32U)gp_malloc(20+5);
 	if(!addr)
 	{
 		goto Fail_Return_2;
 	}
 	else	
 	{
-		nRet = read(fd, addr, 32);
+		nRet = read(fd, addr, 22);
 		if(nRet <= 0) goto Fail_Return;
 	}
 
@@ -184,24 +186,26 @@ Fail_Return_2:
 	//display_osd_flag=1;
 
 	read_flag=1;
-
-	  nRet = gp_strncmp((INT8S*)(addr+21), (INT8S *)"StampMode:Y", 11);
-		if(nRet==0){display_osd_flag=1;/*gp_free((void*) addr);if(fd>=0) close(fd);return STATUS_FAIL;*/}
-		else
-		{
-		    nRet = gp_strncmp((INT8S*)(addr+21), (INT8S *)"StampMode:N", 11);
-		    if(nRet==0){display_osd_flag=0;/*gp_free((void*) addr);if(fd>=0) close(fd);return STATUS_FAIL;*/}
-		}
+	
+	yndata = (INT8U*)addr;
+	data = *(yndata+20);
+	if(data == 'Y')
+	display_osd_flag=1;
+	else
+	display_osd_flag=0;
+	
+	nRet = gp_strncmp((INT8S*)addr, (INT8S *)"Motion Trig LED Ope", 19);
+	if(nRet==0){record_led_flag=1;gp_free((void*) addr);if(fd>=0) close(fd);return STATUS_FAIL; }
 	nRet = gp_strncmp((INT8S*)addr, (INT8S *)"COPYFIGHT MESSAGE? ", 19);
 	if (nRet==0) { save_COPYRIGHT_MESSAGE_to_disk(); gp_free((void*) addr);if(fd>=0) close(fd);return STATUS_FAIL; }
 	nRet = gp_strncmp((INT8S*)addr, (INT8S *)"VERSION_NUMBER??", 16);
 	if (nRet==0) { save_VERSION_NUMBER_to_disk();gp_free((void*) addr); if(fd>=0) close(fd);return STATUS_FAIL; }
 	nRet = gp_strncmp((INT8S*)addr, (INT8S *)"SENSOR?", 7);
 	if (nRet==0) { save_SENSOR_TYPE_to_disk(); gp_free((void*) addr);if(fd>=0) close(fd);return STATUS_FAIL; }
-	nRet = gp_strncmp((INT8S*)addr, (INT8S *)"2015.01.01 23:59:59 ", 19);	//返回0表示参数1和参数2的内容完全相同;
+	nRet = gp_strncmp((INT8S*)addr, (INT8S *)"2017-01-01 23:59:59 ", 19);	//返回0表示参数1和参数2的内容完全相同;
 	if (nRet==0) goto Fail_Return;
 	read_flag=0;
-#if 1
+
 	pdata = (INT8U*)addr;
 	//year
 	wtemp = 0;
@@ -297,16 +301,7 @@ Fail_Return_2:
 	wtemp += data*1;
 	if(wtemp>59) goto Fail_Return;
 	time_set.tm_sec = wtemp;
-#if 0
-	if(*pdata== 'n')
-		{
-		 display_osd_flag=0;
-		}
-	else
-		{
-		 display_osd_flag=1;
-		}
-	#endif
+	
 	if(fd>=0) close(fd);
 	gp_free((void*) addr);
 	cal_time_set(time_set);
@@ -315,7 +310,7 @@ Fail_Return_2:
 
 	save_example_time_to_disk();
 	return STATUS_OK;
-#endif
+	
 	Fail_Return:
 		gp_free((void*) addr);
 	Fail_Return_2:

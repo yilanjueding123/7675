@@ -122,7 +122,7 @@ void state_handling_entry(void *para)
 				state_video_record_entry((void *) &prev_state, msg_id);
 				break;
 			case STATE_AUDIO_RECORD:
-				//state_audio_record_entry((void *) &prev_state);
+				state_audio_record_entry((void *) &prev_state);
 				break;	
 			case STATE_BROWSE:
 				//state_browse_entry((void *) &prev_state, (msg_id & 0xFFFF0000)>>16);

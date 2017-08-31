@@ -514,12 +514,30 @@ void set_led_mode(LED_MODE_ENUM mode)
 			break;
 
 		case LED_AUDIO_RECORD:
-			led_all_off();
+			for(i = 0; i<3; i++)
+			{
+				led_green_on(); 					//l1
+				motor_on();
+				OSTimeDly(15);
+				led_green_off();
+				motor_off();
+				OSTimeDly(15);
+			}
 			DBG_PRINT("led_type = LED_AUDIO_RECORD\r\n");
 			break;
 
 		case LED_WAITING_AUDIO_RECORD:
-			led_all_off();
+			for(i = 0; i<3; i++)
+			{
+				led_green_on(); 					//l1
+				motor_on();
+				OSTimeDly(15);
+				led_green_off();
+				motor_off();
+				OSTimeDly(15);
+			}
+			led_green_on();
+			DBG_PRINT("led_type = LED_WAITING_AUDIO_RECORD\r\n");
 			break;
 
 		case LED_CAPTURE:
@@ -1855,8 +1873,18 @@ void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 
 				if(!(video_record_sts & 0x02))
 				{
-					led_type = LED_RECORD;
-					msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);
+					led_green_off();
+					OSTimeDly(15);
+					led_green_on(); 					//l1
+					OSTimeDly(15);
+					led_green_off();
+					for(i = 0; i<2; i++)
+					{
+						motor_on();
+						OSTimeDly(15);
+						motor_off();
+						OSTimeDly(15);
+					}
 				}
 
 				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
@@ -1891,23 +1919,30 @@ void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr)
 
 void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr)
 {
-	INT16U led_type 	= 0;
+	INT16U led_type 	= 0, i;
 	__msg("d_key: %d\n", * tick_cnt_ptr);
 
-	if ((!s_usbd_pin) && (!pic_down_flag) /*&&(!card_space_less_flag)*/ && (!video_down_flag))
+	if (!s_usbd_pin)
 	{
-
-		if (*tick_cnt_ptr > 63)
+		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
 		{
-
-			if (usb_state_get() == 0)
-			{
-				msgQSend(ApQ, MSG_APQ_POWER_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+			__msg("d_key: %d\n", * tick_cnt_ptr);
+			if(!(audio_record_sts & 0x02))
+			{				
+				for(i = 0; i<3; i++)
+				{
+					led_green_on(); 					//l1
+					motor_on();
+					OSTimeDly(15);
+					led_green_off();
+					motor_off();
+					OSTimeDly(15);
+				}
 			}
+			msgQSend(ApQ, MSG_APQ_AUDO_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
 		}
-
 	}
-
+	
 	*tick_cnt_ptr		= 0;
 
 

@@ -524,20 +524,12 @@ void ap_state_handling_power_off(void)
 		led_green_on();
 		motor_on();
 		delay(50000);
-		delay(50000);
-		delay(50000);
 		led_green_off();
-		delay(50000);
-		delay(50000);
 		delay(50000);
 	}
 
 	delay(50000);
-	delay(50000);
-	delay(50000);
 	motor_off();
-	delay(50000);
-	delay(50000);
 
 	//OSTimeDly(10);
 	type				= DISABLE_KEY;
