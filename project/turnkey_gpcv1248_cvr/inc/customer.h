@@ -411,11 +411,9 @@
 #define AD_KEY_DETECT_PIN		ADC_LINE_0
 #define AD_BAT_DETECT_PIN		AD_KEY_DETECT_PIN
 
-#if 1
 #define VIDEO_KEY				IO_F15
 #define CAPTURE_KEY 			IO_F15
 #define TOUCH_KEY				IO_A1
-#endif
 
 #define SWITCH_KEY				IO_F15
 #define VIDEO_KEY_ACTIVE		1
@@ -427,10 +425,10 @@
 //#define FUN_KAYA					 IO_F15
 //A键直接扫描POWEN键，合在一起
 #define FUN_KEYB				IO_B4
-#define FUN_KEYC				IO_B5
+#define FUN_KEYC				IO_F15//IO_B5
 #define FUN_KEYD				IO_B3
 
-#define IRCTR_KEY				IO_F15//	 IO_B3
+#define IRCTR_KEY				IO_F15
 
 #define FUN_KEY_ACTIVE			0
 #define FUN_KEY1_ACTIVE 		0 
@@ -466,12 +464,8 @@
 
 #define POWER_EN				IO_C13
 
-#if 1
 #define LED1					IO_A0
 #define LED2					IO_F15
-#define LED3					IO_F15
-#define LED4					IO_F15
-#endif
 
 #define MOTOR_IO				IO_C12
 
@@ -495,7 +489,7 @@
 #define C_LOGO					CUSTOM_OFF
 #define C_UVC					CUSTOM_ON
 #define C_USB_AUDIO 			CUSTOM_ON
-#define C_MOTION_DETECTION		CUSTOM_ON
+#define C_MOTION_DETECTION		CUSTOM_OFF
 #define C_AUTO_DEL_FILE 		CUSTOM_ON
 #define C_CYCLIC_VIDEO_RECORD	CUSTOM_ON
 #define C_SCREEN_SAVER			CUSTOM_OFF

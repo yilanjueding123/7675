@@ -55,8 +55,12 @@ extern void led_green_off(void);
 extern void led_red_off(void);
 extern void led_mainled_off(void);
 extern void led_mainled_on(void);
+extern void led_3_on(void);
+extern void led_4_on(void);
 extern void motor_on(void);
 
+extern void led_3_off(void);
+extern void led_4_off(void);
 extern void motor_off(void);
 
 #if TV_DET_ENABLE

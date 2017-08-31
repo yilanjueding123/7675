@@ -934,7 +934,7 @@ INT32S ap_storage_service_storage_mount(void)
 		    //mkdir("C:\\DCIM");
 			//chdir("C:\\DCIM");
 			mkdir("C:\\VIDEO");
-			//mkdir("C:\\PHOTO");
+			mkdir("C:\\PHOTO");
 			//mkdir("C:\\RECORD");
 			g_jpeg_index = g_avi_index = g_wav_index = g_file_index = 0;
 			g_file_num = 0;
@@ -943,11 +943,11 @@ INT32S ap_storage_service_storage_mount(void)
 			}
 			chdir("C:\\VIDEO");
 			get_file_final_avi_index(1);
-			//chdir("C:\\PHOTO");
+			chdir("C:\\PHOTO");
 			get_file_final_jpeg_index(1);
 			//chdir("C:\\RECORD");
 			get_file_final_wav_index(1);
-			//	chdir("C:\\VIDEO");
+			//chdir("C:\\VIDEO");
 			if (g_avi_index > g_jpeg_index) {
 				if (g_avi_index > g_wav_index) {
 					g_file_index = g_avi_index;

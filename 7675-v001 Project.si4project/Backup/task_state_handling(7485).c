@@ -116,7 +116,7 @@ void state_handling_entry(void *para)
 				state_startup_entry((void *) &prev_state);
 				break;
 			case STATE_VIDEO_PREVIEW:
-				state_video_preview_entry((void *) &prev_state);
+				//state_video_preview_entry((void *) &prev_state);
 				break;
 			case STATE_VIDEO_RECORD:
 				state_video_record_entry((void *) &prev_state, msg_id);

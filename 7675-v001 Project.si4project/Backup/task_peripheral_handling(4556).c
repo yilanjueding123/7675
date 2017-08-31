@@ -52,6 +52,10 @@ extern void led_green_on(void);
 extern void led_all_off(void);
 extern void led_green_off(void);
 extern void led_red_off(void);
+extern void led_3_on(void);
+extern void led_4_on(void);
+extern void led_3_off(void);
+extern void led_4_off(void);
 
 void task_peripheral_handling_init(void)
 {
@@ -88,7 +92,7 @@ void task_peripheral_handling_entry(void * para)
 		if (++watch_dog_cnt >= 128)
 		{
 			watch_dog_cnt		= 0;
-			//DBG_PRINT("-----CLEAR WATCH_DOG-----\r\n");
+			DBG_PRINT("-----CLEAR WATCH_DOG-----\r\n");
 			watchdog_clear();
 		}
 

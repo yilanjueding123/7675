@@ -24,15 +24,11 @@ static INT16U	g_led_count;
 static INT8U	g_led_r_state; //0 = OFF;	1=ON;	2=Flicker
 static INT8U	g_led_g_state;
 static INT8U	g_led_flicker_state; //0=同时闪烁	1=交替闪烁
-static INT8U	g_led_main_state;
 static INT8U	led_red_flag;
 static INT8U	led_green_flag;
-static INT8U	led_mainred_flag;
-static INT8U	led_3_flag;
-static INT8U	led_4_flag;
+static INT8U	motor_flag;
 static INT16U	power_off_cnt = 0;
 
-//static INT8U	   charge_full_flag=0;
 static INT8U	switch_key_state = 0;
 
 #if TV_DET_ENABLE
@@ -152,31 +148,12 @@ INT8U			s_usbd_pin;
 //extern INT8U MODE_KEY_flag;
 //	prototypes
 void ap_peripheral_key_init(void);
-void ap_peripheral_rec_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_function_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_function1_key_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_function_touch_key_exe(INT16U * tick_cnt_ptr);
 
-void short_press_one_exe(void);
-void short_press_two_exe(void);
-void short_press_three_exe(void);
-void short_press_four_exe(void);
-void short_press_five_exe(void);
-
-
-
-
-void ap_peripheral_next_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_prev_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_ok_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_sos_key_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_usbd_plug_out_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_pw_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_menu_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_video_prev_exe(INT16U * tick_cnt_ptr);
 
 #if KEY_FUNTION_TYPE			== SAMPLE2
 void ap_peripheral_capture_key_exe(INT16U * tick_cnt_ptr);
@@ -374,23 +351,14 @@ void LED_pin_init(void)
 	gpio_set_port_attribute(LED2, ATTRIBUTE_HIGH);
 	gpio_write_io(LED2, DATA_LOW);
 
-	gpio_init_io(LED3, GPIO_OUTPUT);
-	gpio_set_port_attribute(LED3, ATTRIBUTE_HIGH);
-	gpio_write_io(LED3, DATA_LOW);
-
-	gpio_init_io(LED4, GPIO_OUTPUT);
-	gpio_set_port_attribute(LED4, ATTRIBUTE_HIGH);
-	gpio_write_io(LED4, DATA_LOW);
-
 	gpio_init_io(MOTOR_IO, GPIO_OUTPUT);
 	gpio_set_port_attribute(MOTOR_IO, ATTRIBUTE_HIGH);
 	gpio_write_io(MOTOR_IO, DATA_LOW);
 	
 	led_red_flag		= LED_OFF;
 	led_green_flag		= LED_OFF;
-	led_mainred_flag	= LED_OFF;
-	led_3_flag			= LED_OFF;
-	led_4_flag			= LED_OFF;
+	motor_flag			= LED_OFF;
+	
 	type				= LED_INIT;
 	msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &type, sizeof(INT32U), MSG_PRI_NORMAL);
 
@@ -435,29 +403,27 @@ void set_led_mode(LED_MODE_ENUM mode)
 	{
 		g_led_g_state		= 0;					//3oE??÷oiAAA
 		g_led_r_state		= 0;
-		g_led_main_state	= 0;
 		g_led_flicker_state = 0;
 
 	}
 
-	//	if(battery_low_tell_flag)
-	//		g_led_r_state=2;
-	//	else if(battery_low_tell_flag1)
-	//		g_led_r_state=1;
-	//目前做法是容量小于设置的最低容量后，灯不在给出任何响应
-	//if(card_space_less_flag)
-	//return;
-	//if((prev_mode != LED_LOW_BATT)&&(prev_mode !=LED_LOW_BATT1 ))
 	PREV_LED_TYPE		= prev_mode;
 
 	switch ((INT32U)
 	mode)
 	{
 		case LED_INIT:
-			led_red_on(); //l2
-			led_green_on(); //l1
-			led_3_off();
-			led_4_off();
+			for(i = 0; i<3; i++)
+			{
+				led_green_on(); 
+				motor_on();
+				OSTimeDly(15);
+				led_green_off();
+				OSTimeDly(15);
+			}
+			led_green_on(); 
+			OSTimeDly(55);
+			motor_off();
 			DBG_PRINT("led_type = LED_INIT\r\n");
 			break;
 
@@ -494,9 +460,6 @@ void set_led_mode(LED_MODE_ENUM mode)
 			led_red_on();
 			led_green_on();
 			break;
-
-		//led_red_on();
-		//break;
 		case LED_CHARGEING:
 			DBG_PRINT("led_type = LED_UPDATE_FINISH\r\n");
 			break;
@@ -508,8 +471,6 @@ void set_led_mode(LED_MODE_ENUM mode)
 			break;
 
 		case LED_WAIT_MD:
-			led_3_on();
-			led_4_on();
 			led_green_off();
 			led_red_off();
 			break;
@@ -520,34 +481,35 @@ void set_led_mode(LED_MODE_ENUM mode)
 				g_led_count 		= 0;
 			}
 
-			// led_green_off();	
-			sys_release_timer_isr(LED_blanking_isr);
-
-			for (i = 0; i < 3; i++)
+			led_green_off();
+			OSTimeDly(15);
+			led_green_on(); 					//l1
+			OSTimeDly(15);
+			led_green_off();
+			for(i = 0; i<2; i++)
 			{
-				led_all_off();
+				motor_on();
 				OSTimeDly(15);
-				led_red_on();						//l2
-				led_green_on(); 					//l1
-
-				//led_3_on();
-				//led_4_on();
+				motor_off();
 				OSTimeDly(15);
 			}
-
-			led_all_off();
-			sys_registe_timer_isr(LED_blanking_isr);
+			
 			g_led_flicker_state = 0;
 			DBG_PRINT("led_type = LED_RECORD\r\n");
 			break;
 
 		case LED_WAITING_RECORD:
-			led_red_on();
+			led_green_on(); 					//l1
+			motor_on();
+			OSTimeDly(15);
+			led_green_off();
+			motor_off();
+			OSTimeDly(15);
 			led_green_on();
-			led_3_off();
-			led_4_off();
-
-			//led_green_on();
+			motor_on();
+			OSTimeDly(15);
+			motor_off();
+			
 			DBG_PRINT("led_type = LED_WAITING_RECORD\r\n");
 			break;
 
@@ -558,14 +520,13 @@ void set_led_mode(LED_MODE_ENUM mode)
 
 		case LED_WAITING_AUDIO_RECORD:
 			led_all_off();
-			led_4_on();
 			break;
 
 		case LED_CAPTURE:
-			//led_red_on();
-			//led_green_off();
-			//led_3_off();
 			led_all_off();
+			motor_on();
+			OSTimeDly(15);
+			motor_off();
 			DBG_PRINT("led_type = LED_CAPTURE\r\n");
 			break;
 
@@ -574,8 +535,6 @@ void set_led_mode(LED_MODE_ENUM mode)
 			OSTimeDly(7);
 			led_red_on();
 			led_green_on();
-			led_3_off();
-			led_4_off();
 			break;
 
 		case LED_CAPTURE_FAIL:
@@ -590,19 +549,13 @@ void set_led_mode(LED_MODE_ENUM mode)
 		case LED_WAITING_CAPTURE:
 			led_red_off();
 			led_green_off();
-			led_4_off();
-			led_3_on();
 
-			//open_zd(0);
 			DBG_PRINT("led_type = LED_WAITING_CAPTURE\r\n");
 			break;
 
 		case LED_MOTION_DETECTION:
-			// led_red_on();
-			// led_green_on();	
+
 			led_red_on();
-			led_3_on();
-			led_4_on();
 			DBG_PRINT("led_type = LED_MOTION_DETECTION\r\n");
 			break;
 
@@ -665,46 +618,6 @@ void set_led_mode(LED_MODE_ENUM mode)
 }
 
 
-void led_mainled_on(void)
-{
-	//if(led_mainred_flag != LED_ON)
-	//	 {
-	///	  gpio_write_io(LED3, DATA_HIGH);
-	//	  led_mainred_flag=LED_ON;
-	//	}
-}
-
-
-void led_mainled_off(void)
-{
-	// if(led_mainred_flag != LED_OFF)
-	//	{
-	//	 gpio_write_io(LED3, DATA_LOW);
-	//	 led_mainred_flag=LED_OFF;
-	//	}
-}
-
-
-void led_3_on(void)
-{
-//	if (led_3_flag != LED_ON)
-//	{
-//		gpio_write_io(LED3, DATA_HIGH);
-//		led_3_flag			= LED_ON;
-//	}
-}
-
-
-void led_4_on(void)
-{
-//	if (led_4_flag != LED_ON)
-//	{
-//		gpio_write_io(LED4, DATA_HIGH);
-//		led_4_flag			= LED_ON;
-//	}
-}
-
-
 void led_red_on(void)
 {
 	if (led_red_flag != LED_ON)
@@ -726,15 +639,17 @@ void led_green_on(void)
 
 void motor_on(void)
 {
-	gpio_write_io(MOTOR_IO, DATA_HIGH);
+	if (motor_flag != LED_ON)
+	{
+		gpio_write_io(MOTOR_IO, DATA_HIGH);
+		motor_flag = LED_ON;
+	}
 }
 
 void led_all_off(void)
 {
 	led_red_off();
 	led_green_off();
-	led_3_off();
-	led_4_off();
 
 	//led_mainled_off();
 }
@@ -760,28 +675,15 @@ void led_red_off(void)
 }
 
 
-void led_3_off(void)
-{
-//	if (led_3_flag != LED_OFF)
-//	{
-//		gpio_write_io(LED3, DATA_LOW);
-//		led_3_flag			= LED_OFF;
-//	}
-}
-
-
-void led_4_off(void)
-{
-//	if (led_4_flag != LED_OFF)
-//	{
-//		gpio_write_io(LED4, DATA_LOW);
-//		led_4_flag			= LED_OFF;
-//	}
-}
 
 void motor_off(void)
 {
-	gpio_write_io(MOTOR_IO, DATA_LOW);
+	if (motor_flag != LED_OFF)
+	{
+		gpio_write_io(MOTOR_IO, DATA_LOW);
+		
+		motor_flag = LED_OFF;
+	}
 }
 
 extern INT8U	video_stop_flag;
@@ -1211,7 +1113,7 @@ void ap_peripheral_battery_check_calculate(void)
 
 	if (bat_ck_cnt >= BATTERY_CNT)
 	{
-		DBG_PRINT("[%d]\r\n", (ad_value >> 4));
+		//DBG_PRINT("[%d]\r\n", (ad_value >> 4));
 		bat_lvl_cal 		= ap_peripheral_smith_trigger_battery_level(direction);
 
 		// DBG_PRINT("b:[%d],", bat_lvl_cal);
@@ -1480,6 +1382,7 @@ void ap_peripheral_key_register(INT8U type)
 {
 	INT32U			i;
 
+	__msg("key_register: type = %d\n", type);
 	if (type == GENERAL_KEY)
 	{
 		key_map[0].key_io	= PW_KEY;
@@ -1504,7 +1407,7 @@ void ap_peripheral_key_register(INT8U type)
 
 
 		key_map[4].key_io	= TOUCH_KEY;
-		key_map[4].key_function = (KEYFUNC)ap_peripheral_function_touch_key_exe;
+		key_map[4].key_function = (KEYFUNC)ap_peripheral_pw_key_exe;
 		key_map[4].key_active = FUN_KEYD_ACTIVE;
 		key_map[4].key_long = 0;
 
@@ -1553,8 +1456,7 @@ void ap_peripheral_key_register(INT8U type)
 	else if (type == BETTERY_LOW_STATUS_KEY)
 	{
 		key_map[0].key_io	= PW_KEY;
-		key_map[0].key_function = (KEYFUNC)
-		ap_peripheral_pw_key_exe;
+		key_map[0].key_function = (KEYFUNC)ap_peripheral_pw_key_exe;
 
 #if USE_ADKEY_NO
 
@@ -1585,7 +1487,6 @@ void ap_peripheral_key_judge(void)
 	INT16U			key_down = 0;
 	static INT8U	switch_key_read_cnt = 0;
 
-	//static INT8U charge_cnt=0;
 	for (i = 0; i < USE_IOKEY_NO; i++)
 	{
 		if (key_map[i].key_io)
@@ -1661,8 +1562,6 @@ void ap_peripheral_key_judge(void)
 		}
 	}
 
-	
-
 #if 1
 
 	if ((!auto_off_force_disable) && (!s_usbd_pin) && ! (usb_state_get()))
@@ -1679,7 +1578,9 @@ void ap_peripheral_key_judge(void)
 		}
 	}
 	else 
+	{
 		power_off_cnt = PERI_POWER_OFF;
+	}
 
 #endif
 
@@ -1940,23 +1841,10 @@ void ap_peripheral_adaptor_out_judge(void)
 }
 
 
-void ap_peripheral_function_key_exe(INT16U * tick_cnt_ptr)
-{
-
-}
-
-
-void ap_peripheral_function1_key_exe(INT16U * tick_cnt_ptr)
-{
-
-
-}
-
-
 void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 {
 	INT16U led_type 	= 0, i;
-
+	//__msg("b_key: %d\n", * tick_cnt_ptr);
 	if (!s_usbd_pin)
 	{
 		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
@@ -1964,6 +1852,13 @@ void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 			if ((video_record_sts & 0x04) == 0)
 			{
 				__msg("ap_peripheral_functionb_key_exe\n");
+
+				if(!(video_record_sts & 0x02))
+				{
+					led_type = LED_RECORD;
+					msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);
+				}
+
 				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
 			}
 
@@ -1979,49 +1874,13 @@ void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr)
 {
 	INT16U led_type 	= 0, i;
-	return;
+	
 	if (!s_usbd_pin)
 	{
 		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
 		{
-			if ((video_record_sts & 0x04) == 0)
-			{
-				led_all_off();
-				OSTimeDly(15);
-
-				for (i = 0; i < 3; i++)
-				{
-					led_3_on();
-					led_4_on();
-					OSTimeDly(15);
-					led_3_off();
-					led_4_off();
-					OSTimeDly(15);
-				}
-			}
-			__msg("ap_peripheral_functionc_key_exe\n");
-			if ((video_record_sts & 0x06) == 0)
-			{
-
-				ap_state_config_md_set(1);
-				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-			}
-			else if ((video_record_sts & 0x06) == 0x02)
-			{
-				ap_state_config_md_set(1);
-				msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_MOTION_DETECT_START, NULL, NULL, MSG_PRI_NORMAL);
-				md_detect_enable();
-				ap_video_record_sts_set(0x4);
-			}
-			else if ((video_record_sts & 0x06) == 0x04)
-			{
-				ap_video_record_md_disable();
-				ap_state_config_md_set(0);
-				led_type			= LED_WAIT_MD;
-				msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);
-			}
-			else if ((video_record_sts & 0x06) == 0x06)
-				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+			__msg("c_key: %d\n", * tick_cnt_ptr);
+			msgQSend(ApQ, MSG_APQ_CAPTUER_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
 		}
 	}
 
@@ -2033,7 +1892,7 @@ void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr)
 void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr)
 {
 	INT16U led_type 	= 0;
-
+	__msg("d_key: %d\n", * tick_cnt_ptr);
 
 	if ((!s_usbd_pin) && (!pic_down_flag) /*&&(!card_space_less_flag)*/ && (!video_down_flag))
 	{
@@ -2042,7 +1901,9 @@ void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr)
 		{
 
 			if (usb_state_get() == 0)
+			{
 				msgQSend(ApQ, MSG_APQ_POWER_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+			}
 		}
 
 	}
@@ -2050,216 +1911,6 @@ void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr)
 	*tick_cnt_ptr		= 0;
 
 
-}
-
-void ap_peripheral_function_touch_key_exe(INT16U * tick_cnt_ptr)
-{
-	INT16U led_type 	= 0;
-
-	DBG_PRINT("* tick_cnt_ptr = %d\n", * tick_cnt_ptr);
-	
-	if ((!s_usbd_pin) && (!pic_down_flag) /*&&(!card_space_less_flag)*/ && (!video_down_flag))
-	{
-
-		if (*tick_cnt_ptr > 63)
-		{
-
-			if (usb_state_get() == 0)
-				msgQSend(ApQ, MSG_APQ_POWER_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-		}
-
-	}
-
-	*tick_cnt_ptr		= 0;
-
-
-}
-
-void short_press_one_exe(void)
-{
-	INT16U led_type 	= 0;
-
-	if (!s_usbd_pin)
-	{
-		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
-		{
-			if ((video_record_sts & 0x06) == 0x04)
-			{
-				ap_video_record_md_disable();
-				ap_state_config_md_set(0);
-				led_type			= LED_WAIT_MD;
-				msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);
-			}
-			else 
-				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-
-		}
-	}
-	else 
-	{
-		if (ap_state_handling_storage_id_get() != NO_STORAGE)
-			OSQPost(USBTaskQ, (void *) MSG_USBD_SWITCH);
-
-	}
-
-}
-
-
-void short_press_two_exe(void)
-{
-	INT16U led_type 	= 0, i;
-
-	if (!s_usbd_pin)
-	{
-
-		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
-		{
-			if ((video_record_sts & 0x04) == 0)
-			{
-				led_all_off();
-				OSTimeDly(15);
-
-				for (i = 0; i < 3; i++)
-				{
-					led_3_on();
-					led_4_on();
-					OSTimeDly(15);
-					led_3_off();
-					led_4_off();
-					OSTimeDly(15);
-				}
-			}
-
-			if ((video_record_sts & 0x06) == 0x02)
-			{
-				ap_state_config_md_set(1);
-				msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_MOTION_DETECT_START, NULL, NULL, MSG_PRI_NORMAL);
-				md_detect_enable();
-				ap_video_record_sts_set(0x4);
-			}
-			else if ((video_record_sts & 0x06) == 0)
-			{
-				ap_state_config_md_set(1);
-
-				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-			}
-		}
-	}
-
-}
-
-
-void short_press_three_exe(void)
-{
-
-
-
-}
-
-
-void short_press_four_exe(void)
-{
-
-
-}
-
-
-void short_press_five_exe(void)
-{
-
-
-}
-
-
-void ap_peripheral_next_key_exe(INT16U * tick_cnt_ptr)
-{
-#if 0
-	INT8U data			= 0;
-
-	msgQSend(ApQ, MSG_APQ_AUDIO_EFFECT_DOWN, NULL, NULL, MSG_PRI_NORMAL);
-
-	if (screen_saver_enable)
-	{
-		screen_saver_enable = 0;
-		msgQSend(ApQ, MSG_APQ_KEY_WAKE_UP, NULL, NULL, MSG_PRI_NORMAL);
-	}
-	else 
-	{
-		if (*tick_cnt_ptr > 24)
-		{
-			msgQSend(ApQ, MSG_APQ_FORWARD_FAST_PLAY, &data, sizeof(INT8U), MSG_PRI_NORMAL);
-		}
-		else 
-		{
-			msgQSend(ApQ, MSG_APQ_NEXT_KEY_ACTIVE, &data, sizeof(INT8U), MSG_PRI_NORMAL);
-		}
-	}
-
-#endif
-
-	* tick_cnt_ptr		= 0;
-}
-
-
-void ap_peripheral_prev_key_exe(INT16U * tick_cnt_ptr)
-{
-#if 0
-	INT8U data			= 0;
-
-	msgQSend(ApQ, MSG_APQ_AUDIO_EFFECT_UP, NULL, NULL, MSG_PRI_NORMAL);
-
-	if (screen_saver_enable)
-	{
-		screen_saver_enable = 0;
-		msgQSend(ApQ, MSG_APQ_KEY_WAKE_UP, NULL, NULL, MSG_PRI_NORMAL);
-	}
-	else 
-	{
-		if (*tick_cnt_ptr > 24)
-		{
-			msgQSend(ApQ, MSG_APQ_BACKWORD_FAST_PLAY, &data, sizeof(INT8U), MSG_PRI_NORMAL);
-
-		}
-		else 
-		{
-			msgQSend(ApQ, MSG_APQ_PREV_KEY_ACTIVE, &data, sizeof(INT8U), MSG_PRI_NORMAL);
-		}
-	}
-
-#endif
-
-	* tick_cnt_ptr		= 0;
-}
-
-
-void ap_peripheral_ok_key_exe(INT16U * tick_cnt_ptr)
-{
-#if 0
-	msgQSend(ApQ, MSG_APQ_AUDIO_EFFECT_OK, NULL, NULL, MSG_PRI_NORMAL);
-
-	if (screen_saver_enable)
-	{
-		screen_saver_enable = 0;
-		msgQSend(ApQ, MSG_APQ_KEY_WAKE_UP, NULL, NULL, MSG_PRI_NORMAL);
-	}
-	else 
-	{
-		if (*tick_cnt_ptr > 24)
-		{
-			//for test
-			msgQSend(ApQ, MSG_APQ_INIT_THUMBNAIL, NULL, NULL, MSG_PRI_NORMAL);
-
-			//			msgQSend(ApQ, MSG_APQ_FILE_LOCK_DURING_RECORDING, NULL, NULL, MSG_PRI_NORMAL);
-		}
-		else 
-		{
-			msgQSend(ApQ, MSG_APQ_FUNCTION_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-		}
-	}
-
-#endif
-
-	* tick_cnt_ptr		= 0;
 }
 
 
@@ -2335,46 +1986,6 @@ void ap_peripheral_capture_key_exe(INT16U * tick_cnt_ptr)
 
 #endif
 
-void ap_peripheral_sos_key_exe(INT16U * tick_cnt_ptr)
-{
-#if 0
-
-#if CRAZY_KEY_TEST					== 1	
-
-	if (!crazy_key_enable)
-	{
-		crazy_key_enable	= 1;
-	}
-	else 
-	{
-		crazy_key_enable	= 0;
-	}
-
-	*tick_cnt_ptr		= 0;
-	return;
-
-#endif
-
-	if (screen_saver_enable)
-	{
-		screen_saver_enable = 0;
-		msgQSend(ApQ, MSG_APQ_KEY_WAKE_UP, NULL, NULL, MSG_PRI_NORMAL);
-	}
-	else 
-	{
-		if (*tick_cnt_ptr > 24)
-		{
-		}
-		else 
-		{
-			msgQSend(ApQ, MSG_APQ_SOS_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-		}
-	}
-
-#endif
-
-	* tick_cnt_ptr		= 0;
-}
 
 
 void ap_peripheral_usbd_plug_out_exe(INT16U * tick_cnt_ptr)
@@ -2387,15 +1998,17 @@ void ap_peripheral_usbd_plug_out_exe(INT16U * tick_cnt_ptr)
 void ap_peripheral_pw_key_exe(INT16U * tick_cnt_ptr)
 {
 	INT8U i 			= 0;
-
+	__msg("pw_key: %d, %d\n", * tick_cnt_ptr, s_usbd_pin);
 	if ((!s_usbd_pin) && (!pic_down_flag) /*&&(!card_space_less_flag)*/ && (!video_down_flag))
 	{
 
 		if (*tick_cnt_ptr > 63)
 		{
-
+			__msg("usb_state_get() = %d\n", usb_state_get());
 			if (usb_state_get() == 0)
+			{
 				msgQSend(ApQ, MSG_APQ_POWER_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+			}
 		}
 
 	}
@@ -2403,62 +2016,12 @@ void ap_peripheral_pw_key_exe(INT16U * tick_cnt_ptr)
 	{
 
 		if (ap_state_handling_storage_id_get() != NO_STORAGE)
+		{
 			OSQPost(USBTaskQ, (void *) MSG_USBD_SWITCH);
+		}
 	}
 
 	*tick_cnt_ptr		= 0;
-}
-
-
-void ap_peripheral_video_prev_exe(INT16U * tick_cnt_ptr)
-{
-#if 0
-
-	if ((!s_usbd_pin) && (!pic_down_flag) && (!card_space_less_flag) && (!video_down_flag))
-	{
-		if (ap_state_handling_storage_id_get() != NO_STORAGE)
-		{
-			if (*tick_cnt_ptr > 63)
-			{
-
-			}
-			else 
-			{
-
-				// msgQSend(ApQ, MSG_APQ_CAPTUER_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-			}
-		}
-	}
-
-#endif
-}
-
-
-void ap_peripheral_menu_key_exe(INT16U * tick_cnt_ptr)
-{
-#if KEY_FUNTION_TYPE				== C6_KEY
-	msgQSend(ApQ, MSG_APQ_AUDIO_EFFECT_MENU, NULL, NULL, MSG_PRI_NORMAL);
-
-	if (screen_saver_enable)
-	{
-		screen_saver_enable = 0;
-		msgQSend(ApQ, MSG_APQ_KEY_WAKE_UP, NULL, NULL, MSG_PRI_NORMAL);
-	}
-	else 
-	{
-		if (*tick_cnt_ptr > 24)
-		{
-		}
-		else 
-		{
-			msgQSend(ApQ, MSG_APQ_MENU_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-		}
-	}
-
-#endif
-
-	* tick_cnt_ptr		= 0;
 }
 
 

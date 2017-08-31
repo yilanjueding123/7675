@@ -1,6 +1,12 @@
----- ver_check Matches (7 in 1 files) ----
-sensor_soi_h42.c (driver_l2\sensor\src) line 156 : INT8U ver_check(INT8U id)
-sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 				if((ver_check(h42_id) == 0)||(ver_check(h42_id) == 0x80))	//SOI suggetion do it.
-sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 				else if (ver_check(h42_id) == 0x81)
-sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 			if((ver_check(h42_id) == 0)||(ver_check(h42_id) == 0x80))	//SOI suggetion do it.
-sensor_SOi_h42_init in sensor_soi_h42.c (driver_l2\sensor\src) : 			else if (ver_check(h42_id) == 0x81)
+---- MSG_APQ_VIDEO_RECORD_ACTIVE Matches (11 in 6 files) ----
+ap_peripheral_battery_check_calculate in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 						msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+ap_peripheral_battery_check_calculate in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+ap_peripheral_functionb_key_exe in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+ap_video_record_func_key_active in ap_video_record.c (application\task_state_handling\state_video_record\src) : 		if ((event == MSG_APQ_VIDEO_RECORD_ACTIVE) || (event == MSG_APQ_CAPTUER_ACTIVE))
+state_audio_record_entry in state_audio_record.c (application\task_state_handling\state_audio_record\src) : 			case MSG_APQ_VIDEO_RECORD_ACTIVE:
+state_audio_record_entry in state_audio_record.c (application\task_state_handling\state_audio_record\src) : 				msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+state_video_preview_entry in state_video_preview.c (application\task_state_handling\state_video_preview\src) : 			case MSG_APQ_VIDEO_RECORD_ACTIVE:
+state_video_record_entry in state_video_record.c (application\task_state_handling\state_video_record\src) : 		//	msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+state_video_record_entry in state_video_record.c (application\task_state_handling\state_video_record\src) : 			msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+state_video_record_entry in state_video_record.c (application\task_state_handling\state_video_record\src) : 			case MSG_APQ_VIDEO_RECORD_ACTIVE:
+turnkey_drv_msg.h (application\inc) line 466 : 	MSG_APQ_VIDEO_RECORD_ACTIVE,
