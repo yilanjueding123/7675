@@ -521,7 +521,6 @@
 //#define PWM_CTR_LED
 //+++
 #define ENABLE_SAVE_SENSOR_RAW_DATA 0
-//#define TOUCK_KEY_SETUP
 
 #endif //__CUSTOMER_H__
 

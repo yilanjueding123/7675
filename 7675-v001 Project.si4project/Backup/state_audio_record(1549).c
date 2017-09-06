@@ -40,7 +40,7 @@ INT8S state_audio_record_init(INT32U prev_state)
 	return STATUS_OK;
 }
 
-INT8U switch_flag;
+
 static INT8U audio_record_from = 0;
 static INT8U send_apq_message = 0;
 void state_audio_record_entry(void * para)
@@ -51,7 +51,7 @@ void state_audio_record_entry(void * para)
 	INT32U led_type;
 
 	//	INT16U temp_vol;
-	//INT8U switch_flag;
+	INT8U switch_flag;
 	INT8U type;
 	prev_state			= * ((INT32U *) para);
 
@@ -169,7 +169,7 @@ void state_audio_record_entry(void * para)
 			case MSG_APQ_VIDEO_RECORD_ACTIVE:
 				if (ap_audio_record_sts_get() == AUDIO_RECORD_BUSY)
 				{
-					DBG_PRINT("1++\r\n");
+					//DBG_PRINT("1++\r\n");
 					ap_audio_record_func_key_active();
 					send_apq_message	= 0;
 				}
@@ -187,7 +187,7 @@ void state_audio_record_entry(void * para)
 			case MSG_APQ_CAPTUER_ACTIVE:
 				if (ap_audio_record_sts_get() == AUDIO_RECORD_BUSY)
 				{
-					DBG_PRINT("2++\r\n");
+					//DBG_PRINT("2++\r\n");
 					ap_audio_record_func_key_active(); //Stop audio recording
 					send_apq_message	= 0;
 				}
@@ -226,7 +226,6 @@ void state_audio_record_entry(void * para)
 				}
 				else 
 				{
-					__msg("MSG_APQ_AUDO_ACTIVE\n");
 					ap_audio_record_func_key_active();
 				}
 
@@ -252,7 +251,7 @@ void state_audio_record_entry(void * para)
 					g_during_switch_process = 1;
 					switch_flag 		= 1;
 
-					DBG_PRINT("5++\r\n");
+					//DBG_PRINT("5++\r\n");
 					ap_audio_record_func_key_active();
 					ap_audio_record_func_key_active();
 				}
@@ -267,7 +266,7 @@ void state_audio_record_entry(void * para)
 			case MSG_APQ_CONNECT_TO_PC:
 				if (ap_audio_record_sts_get() == AUDIO_RECORD_BUSY)
 				{
-					DBG_PRINT("6++\r\n");
+					//DBG_PRINT("6++\r\n");
 					ap_audio_record_func_key_active(); //Stop audio recording
 				}
 
@@ -386,7 +385,7 @@ void state_audio_record_entry(void * para)
 			case MSG_APQ_AUDIO_ENCODE_ERR:
 				if (ap_audio_record_sts_get() &AUDIO_RECORD_BUSY)
 				{
-					DBG_PRINT("7++\r\n");
+					//DBG_PRINT("7++\r\n");
 					ap_audio_record_func_key_active();
 					msgQSend(StorageServiceQ, MSG_STORAGE_SERVICE_TIMER_START, NULL, NULL, MSG_PRI_NORMAL);
 					msgQSend(StorageServiceQ, MSG_STORAGE_SERVICE_STORAGE_CHECK, NULL, 0, MSG_PRI_NORMAL);

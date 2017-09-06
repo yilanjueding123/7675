@@ -289,12 +289,12 @@ void H42_set_exp_freq(int freq)
 
 	if(freq == 50)
 	{
-		jxh42_seInfo.sensor_ev_idx = H42_50HZ_INIT_EV_IDX;
-		jxh42_seInfo.ae_ev_idx = 0;
-		jxh42_seInfo.daylight_ev_idx= H42_50HZ_DAY_EV_IDX;
-		jxh42_seInfo.night_ev_idx= H42_50HZ_NIGHT_EV_IDX;			
-		jxh42_seInfo.max_ev_idx = H42_50HZ_MAX_EXP_IDX - 1;
-		p_expTime_table = (int *)g_h42_exp_time_gain_50Hz;
+			jxh42_seInfo.sensor_ev_idx = H42_50HZ_INIT_EV_IDX;
+			jxh42_seInfo.ae_ev_idx = 0;
+			jxh42_seInfo.daylight_ev_idx= H42_50HZ_DAY_EV_IDX;
+			jxh42_seInfo.night_ev_idx= H42_50HZ_NIGHT_EV_IDX;			
+			jxh42_seInfo.max_ev_idx = H42_50HZ_MAX_EXP_IDX - 1;
+			p_expTime_table = (int *)g_h42_exp_time_gain_50Hz;
 	}
 	else if(freq == 60)
 

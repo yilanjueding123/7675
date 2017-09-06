@@ -179,7 +179,7 @@ void drv_l1_init(void)
 	//gpio_init_io(SPEAKER_EN, GPIO_OUTPUT);
 	//gpio_set_port_attribute(SPEAKER_EN, 1);
 	//gpio_write_io(SPEAKER_EN, 0);
-	//__msg("-----------power_en-----------------\n");
+
 	gpio_init_io(POWER_EN, GPIO_OUTPUT);
 	gpio_set_port_attribute(POWER_EN, ATTRIBUTE_HIGH);
 	gpio_write_io(POWER_EN, DATA_HIGH);

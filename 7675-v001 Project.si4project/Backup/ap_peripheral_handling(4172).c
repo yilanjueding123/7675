@@ -29,7 +29,7 @@ static INT8U	led_green_flag;
 static INT8U	motor_flag;
 static INT16U	power_off_cnt = 0;
 
-//static INT8U	switch_key_state = 0;
+static INT8U	switch_key_state = 0;
 
 #if TV_DET_ENABLE
 INT8U			tv_plug_in_flag;
@@ -66,11 +66,11 @@ INT8U			gsensor_data[2][32] =
 };
 
 
-//static void *	gsensor_msgQId0 = 0;
-//static INT32U	gsensor_msgId0 = 0;
+static void *	gsensor_msgQId0 = 0;
+static INT32U	gsensor_msgId0 = 0;
 
 
-//static INT8U	ad_line_select = 0;
+static INT8U	ad_line_select = 0;
 
 static INT16U	adc_battery_value_new, adc_battery_value_old;
 static INT32U	battery_stable_cnt = 0;
@@ -119,7 +119,7 @@ INT8U			long_key_exec_flag;
 #endif
 
 static INT32U	key_active_cnt;
-//static INT8U	lcd_bl_sts;
+static INT8U	lcd_bl_sts;
 static INT8U	power_off_timerid;
 static INT8U	usbd_detect_io_timerid;
 static KEYSTATUS key_map[USE_IOKEY_NO];
@@ -151,10 +151,15 @@ void ap_peripheral_key_init(void);
 void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr);
-void ap_peripheral_touch_key_exe(INT16U * tick_cnt_ptr);
 
 void ap_peripheral_usbd_plug_out_exe(INT16U * tick_cnt_ptr);
 void ap_peripheral_pw_key_exe(INT16U * tick_cnt_ptr);
+
+#if KEY_FUNTION_TYPE			== SAMPLE2
+void ap_peripheral_capture_key_exe(INT16U * tick_cnt_ptr);
+
+#endif
+
 void ap_peripheral_null_key_exe(INT16U * tick_cnt_ptr);
 
 #if USE_ADKEY_NO
@@ -404,7 +409,8 @@ void set_led_mode(LED_MODE_ENUM mode)
 
 	PREV_LED_TYPE		= prev_mode;
 
-	switch ((INT32U)mode)
+	switch ((INT32U)
+	mode)
 	{
 		case LED_INIT:
 			for(i = 0; i<3; i++)
@@ -560,7 +566,7 @@ void set_led_mode(LED_MODE_ENUM mode)
 
 		case LED_WAITING_CAPTURE:
 			led_red_off();
-			led_green_on();
+			led_green_off();
 
 			DBG_PRINT("led_type = LED_WAITING_CAPTURE\r\n");
 			break;
@@ -703,7 +709,7 @@ extern INT8U	video_stop_flag;
 
 void LED_blanking_isr(void)
 {
-//	INT8U			type = NULL;
+	INT8U			type = NULL;
 
 	//if(card_space_less_flag)
 	//	return;
@@ -1419,7 +1425,7 @@ void ap_peripheral_key_register(INT8U type)
 
 
 		key_map[4].key_io	= TOUCH_KEY;
-		key_map[4].key_function = (KEYFUNC)ap_peripheral_touch_key_exe;
+		key_map[4].key_function = (KEYFUNC)ap_peripheral_pw_key_exe;
 		key_map[4].key_active = FUN_KEYD_ACTIVE;
 		key_map[4].key_long = 0;
 
@@ -1495,9 +1501,9 @@ INT32U			crazy_key_cnt = 0;
 
 void ap_peripheral_key_judge(void)
 {
-	INT32U			i, key_press = 0/*, led_type*/;
+	INT32U			i, key_press = 0, led_type;
 	INT16U			key_down = 0;
-//	static INT8U	switch_key_read_cnt = 0;
+	static INT8U	switch_key_read_cnt = 0;
 
 	for (i = 0; i < USE_IOKEY_NO; i++)
 	{
@@ -1574,7 +1580,7 @@ void ap_peripheral_key_judge(void)
 		}
 	}
 
-#if 0
+#if 1
 
 	if ((!auto_off_force_disable) && (!s_usbd_pin) && ! (usb_state_get()))
 	{
@@ -1855,8 +1861,8 @@ void ap_peripheral_adaptor_out_judge(void)
 
 void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 {
-	INT16U /*led_type 	= 0,*/ i;
-	__msg("b_key: %d\n", * tick_cnt_ptr);
+	INT16U led_type 	= 0, i;
+	//__msg("b_key: %d\n", * tick_cnt_ptr);
 	if (!s_usbd_pin)
 	{
 		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
@@ -1895,7 +1901,7 @@ void ap_peripheral_functionb_key_exe(INT16U * tick_cnt_ptr)
 
 void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr)
 {
-//	INT16U led_type 	= 0, i;
+	INT16U led_type 	= 0, i;
 	
 	if (!s_usbd_pin)
 	{
@@ -1913,7 +1919,7 @@ void ap_peripheral_functionc_key_exe(INT16U * tick_cnt_ptr)
 
 void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr)
 {
-	INT16U /*led_type 	= 0,*/ i;
+	INT16U led_type 	= 0, i;
 	__msg("d_key: %d\n", * tick_cnt_ptr);
 
 	if (!s_usbd_pin)
@@ -1942,60 +1948,80 @@ void ap_peripheral_functiond_key_exe(INT16U * tick_cnt_ptr)
 
 }
 
-void ap_peripheral_touch_key_exe(INT16U * tick_cnt_ptr)
+
+#if KEY_FUNTION_TYPE			== SAMPLE2
+
+void ap_peripheral_capture_key_exe(INT16U * tick_cnt_ptr)
 {
-	INT16U /*led_type 	= 0,*/ i;
-	__msg("touch: %d\n", * tick_cnt_ptr);
+#if 0
+	INT32U led_type;
+
+#if GPDV_BOARD_VERSION				!= GPCV1237A_Aerial_Photo	
+	msgQSend(ApQ, MSG_APQ_AUDIO_EFFECT_OK, NULL, NULL, MSG_PRI_NORMAL);
+
+	if (screen_saver_enable)
+	{
+		screen_saver_enable = 0;
+		msgQSend(ApQ, MSG_APQ_KEY_WAKE_UP, NULL, NULL, MSG_PRI_NORMAL);
+	}
+	else 
+	{
+		msgQSend(ApQ, MSG_APQ_CAPTURE_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
+	}
+
+#else
+
+	DBG_PRINT("PIC_FLAG=%d\r\n", pic_down_flag);
 
 	if (!s_usbd_pin)
 	{
-#if SUPPORT_LONGKEY 								== CUSTOM_ON
-		
-		if (*tick_cnt_ptr > 63)
+		//if(ap_state_handling_storage_id_get() == NO_STORAGE)
+		//	{
+		///	 
+		//	  led_type = LED_TELL_CARD;
+		//	   msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);
+		//	}
+		if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!pic_down_flag) && (!card_space_less_flag) &&
+			 (!video_down_flag))
 		{
-			__msg("touch_key: long function: %d\n", usb_state_get());
-			if (usb_state_get() == 0)
+#if SUPPORT_LONGKEY 						== CUSTOM_ON
+
+			if (*tick_cnt_ptr > 63)
 			{
-				msgQSend(ApQ, MSG_APQ_POWER_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
 			}
-		}
-		else 
+			else 
 #endif
-		if(*tick_cnt_ptr > Short_Single_width-1)
-		{
-			if ((ap_state_handling_storage_id_get() != NO_STORAGE) && (!card_space_less_flag) && (!video_down_flag))
+
 			{
-				if ((video_record_sts & 0x04) == 0)
-				{
-					__msg("ap_peripheral_functionb_key_exe\n");
-
-					if(!(video_record_sts & 0x02))
-					{
-						led_green_off();
-						OSTimeDly(15);
-						led_green_on(); 					//l1
-						OSTimeDly(15);
-						led_green_off();
-						for(i = 0; i<2; i++)
-						{
-							motor_on();
-							OSTimeDly(15);
-							motor_off();
-							OSTimeDly(15);
-						}
-					}
-
-					msgQSend(ApQ, MSG_APQ_VIDEO_RECORD_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
-				}
-
+				DBG_PRINT("[CAPTUER_ACTIVE...]\r\n");
+				msgQSend(ApQ, MSG_APQ_CAPTUER_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
 			}
 		}
 	}
-	
-	*tick_cnt_ptr		= 0;
+	else 
+	{
+		if (*tick_cnt_ptr > 63)
+		{
+			//OSQPost(USBTaskQ, (void *) MSG_USBD_SWITCH);
+		}
+		else 
+		{
+			if (!pic_down_flag)
+				OSQPost(USBTaskQ, (void *) MSG_USBD_SWITCH);
+		}
+	}
 
+#endif
 
+#endif
+
+	* tick_cnt_ptr		= 0;
 }
+
+
+#endif
+
+
 
 void ap_peripheral_usbd_plug_out_exe(INT16U * tick_cnt_ptr)
 {
@@ -2006,11 +2032,10 @@ void ap_peripheral_usbd_plug_out_exe(INT16U * tick_cnt_ptr)
 
 void ap_peripheral_pw_key_exe(INT16U * tick_cnt_ptr)
 {
-//	INT8U i 			= 0;
+	INT8U i 			= 0;
 	__msg("pw_key: %d, %d\n", * tick_cnt_ptr, s_usbd_pin);
 	if ((!s_usbd_pin) && (!pic_down_flag) /*&&(!card_space_less_flag)*/ && (!video_down_flag))
 	{
-#if SUPPORT_LONGKEY 								== CUSTOM_ON
 
 		if (*tick_cnt_ptr > 63)
 		{
@@ -2020,7 +2045,7 @@ void ap_peripheral_pw_key_exe(INT16U * tick_cnt_ptr)
 				msgQSend(ApQ, MSG_APQ_POWER_KEY_ACTIVE, NULL, NULL, MSG_PRI_NORMAL);
 			}
 		}
-#endif
+
 	}
 	else if (s_usbd_pin)
 	{

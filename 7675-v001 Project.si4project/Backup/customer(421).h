@@ -5,7 +5,7 @@
 #define CUSTOM_ON				1
 #define CUSTOM_OFF				0
 
-#define DBG_MESSAGE 			CUSTOM_OFF 	// UART debug message
+#define DBG_MESSAGE 			CUSTOM_OFF//CUSTOM_ON	// UART debug message
 
 //configure
 #define DVP_V1_0				1
@@ -521,7 +521,6 @@
 //#define PWM_CTR_LED
 //+++
 #define ENABLE_SAVE_SENSOR_RAW_DATA 0
-//#define TOUCK_KEY_SETUP
 
 #endif //__CUSTOMER_H__
 

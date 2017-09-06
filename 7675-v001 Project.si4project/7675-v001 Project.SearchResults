@@ -1,28 +1,8 @@
----- led_green_on Matches (27 in 5 files) ----
-charge_flash_pro in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 		led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on(); 
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on(); 
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on(); 					//l1
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on(); 					//l1
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on(); 					//l1
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on(); 					//l1
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on();
-set_led_mode in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on();
-ap_peripheral_handling.c (application\task_peripheral_handling\src) line 649 : void led_green_on(void)
-LED_blanking_isr in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on();
-LED_blanking_isr in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 			led_green_on();
-LED_blanking_isr in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 				led_green_on();
-ap_peripheral_functionb_key_exe in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on(); 					//l1
-ap_peripheral_functiond_key_exe in ap_peripheral_handling.c (application\task_peripheral_handling\src) : 					led_green_on(); 					//l1
-ap_peripheral_handling.h (application\task_peripheral_handling\inc) line 52 : extern void led_green_on(void);
-ap_state_handling.c (application\task_state_handling\src) line 68 : extern void led_green_on(void);
-ap_state_handling_power_off in ap_state_handling.c (application\task_state_handling\src) : 		led_green_on();
-ap_video_record.c (application\task_state_handling\state_video_record\src) line 43 : extern void led_green_on(void);
-task_peripheral_handling.c (application\task_peripheral_handling\src) line 51 : extern void led_green_on(void);
-task_peripheral_handling_entry in task_peripheral_handling.c (application\task_peripheral_handling\src) : 								//led_green_on();
+---- POWER_EN Matches (7 in 4 files) ----
+ap_state_firmware_upgrade in ap_state_firmware_upgrade.c (application\task_state_handling\src) : 	        gpio_write_io(POWER_EN, DATA_LOW);
+ap_state_firmware_upgrade in ap_state_firmware_upgrade.c (application\task_state_handling\src) : 	        gpio_write_io(POWER_EN, DATA_LOW);
+ap_state_handling_power_off in ap_state_handling.c (application\task_state_handling\src) : 	gpio_write_io(POWER_EN, DATA_LOW);
+customer.h (project\turnkey_gpcv1248_cvr\inc) line 465 : #define POWER_EN				IO_C13
+drv_l1_init in drv_l1_init.c (driver_l1\common\src) : 	gpio_init_io(POWER_EN, GPIO_OUTPUT);
+drv_l1_init in drv_l1_init.c (driver_l1\common\src) : 	gpio_set_port_attribute(POWER_EN, ATTRIBUTE_HIGH);
+drv_l1_init in drv_l1_init.c (driver_l1\common\src) : 	gpio_write_io(POWER_EN, DATA_HIGH);

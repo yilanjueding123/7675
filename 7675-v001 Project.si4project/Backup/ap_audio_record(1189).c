@@ -230,7 +230,7 @@ INT8U ap_audio_record_sts_get(void)
 	return audio_record_sts;
 }
 
-extern INT8U switch_flag;
+
 void ap_audio_record_func_key_active(void)
 {
 	INT32U			led_type = 0;
@@ -265,11 +265,9 @@ void ap_audio_record_func_key_active(void)
 		{
 			unlink((CHAR *) curr_audio_file_info.file_path_addr);
 		}
-		if(!switch_flag)		//in order to envode when switch file, send same message to set led mode.
-		{
-			led_type=LED_WAITING_AUDIO_RECORD;		
-			msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);
-		}
+
+		led_type=LED_WAITING_AUDIO_RECORD;		
+		msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);
 		msgQSend(StorageServiceQ, MSG_STORAGE_SERVICE_TIMER_START, NULL, NULL, MSG_PRI_NORMAL);
 	}
 	else if (! (audio_record_sts & AUDIO_RECORD_UNMOUNT))

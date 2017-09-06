@@ -273,21 +273,17 @@ void sys_power_handler(void)
 	}
 	else
 	{
+		
 		if (PW_KEY == PWR_KEY0) {
-		if(sys_pwr_key0_read()) 
-			{
+		 	if(sys_pwr_key0_read()) {
 				ir_cnt++;
 		 	} else {
 				ir_cnt = 0;
 		 	}
-		} 
-		else if (PW_KEY == PWR_KEY1) 
-		{
-			if(sys_pwr_key1_read())  
-			{
+		} else if (PW_KEY == PWR_KEY1) {
+		 	if(sys_pwr_key1_read()) {
 				ir_cnt++;
-		 	} else 
-			{
+		 	} else {
 				ir_cnt = 0;
 		 	}
 		}

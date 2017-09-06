@@ -5,7 +5,7 @@
 #define CUSTOM_ON				1
 #define CUSTOM_OFF				0
 
-#define DBG_MESSAGE 			CUSTOM_OFF 	// UART debug message
+#define DBG_MESSAGE 			CUSTOM_ON//CUSTOM_OFF//CUSTOM_ON	// UART debug message
 
 //configure
 #define DVP_V1_0				1
@@ -425,7 +425,7 @@
 //#define FUN_KAYA					 IO_F15
 //A键直接扫描POWEN键，合在一起
 #define FUN_KEYB				IO_B4
-#define FUN_KEYC				IO_B5//IO_F15
+#define FUN_KEYC				IO_F15//IO_B5
 #define FUN_KEYD				IO_B3
 
 #define IRCTR_KEY				IO_F15
@@ -521,7 +521,6 @@
 //#define PWM_CTR_LED
 //+++
 #define ENABLE_SAVE_SENSOR_RAW_DATA 0
-//#define TOUCK_KEY_SETUP
 
 #endif //__CUSTOMER_H__
 

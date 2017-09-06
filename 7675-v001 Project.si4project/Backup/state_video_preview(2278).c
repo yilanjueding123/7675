@@ -318,8 +318,8 @@ void state_video_preview_entry(void * para)
 				{
 					DBG_PRINT("-----set_cap_wait----\r\n");
 
-					led_type = LED_WAITING_CAPTURE;
-					msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);  
+					//led_type = LED_WAITING_CAPTURE;
+					// msgQSend(PeripheralTaskQ, MSG_PERIPHERAL_TASK_LED_SET, &led_type, sizeof(INT32U), MSG_PRI_NORMAL);  
 				}
 
 				pic_down_flag = 0;
